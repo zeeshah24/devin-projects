@@ -1,38 +1,15 @@
 # devin-projects
 
-A small FastAPI todo service used as a sandbox for practicing Devin workflows: delegating tickets, fixing CI, and iterating on playbooks against a real codebase.
+Documentation for improving how teams use Devin — specifically, closing the gap between power users and everyone else.
 
-## Setup
+## Contents
 
-```bash
-python -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"
-```
-
-## Commands
-
-| Task | Command |
+| Document | What it covers |
 | --- | --- |
-| Run the API | `uvicorn todo_api.main:app --reload --app-dir src` |
-| Run tests | `pytest -q` |
-| Lint | `ruff check .` |
-| Format | `ruff format .` |
+| [docs/devin-enablement-playbook.md](docs/devin-enablement-playbook.md) | The six failure modes behind low-effectiveness usage, how to detect each one, the org-level fixes, a 30/60/90 rollout, and the metrics to track |
+| [docs/user-metrics-and-diagnosis-plan.md](docs/user-metrics-and-diagnosis-plan.md) | How to collect per-user usage data, segment users by effectiveness, and map each lagging signal to a specific intervention |
+| [docs/playbooks/ticket_to_pr.md](docs/playbooks/ticket_to_pr.md) | Starter playbook: ticket to review-ready PR |
+| [docs/playbooks/fix_failing_ci.md](docs/playbooks/fix_failing_ci.md) | Starter playbook: diagnose and fix failing CI |
+| [docs/playbooks/session_postmortem.md](docs/playbooks/session_postmortem.md) | Starter playbook: session post-mortem and reusable-asset extraction |
 
-Interactive API docs are at `http://localhost:8000/docs` once the server is running.
-
-## API
-
-| Method | Path | Description |
-| --- | --- | --- |
-| GET | `/health` | Liveness check |
-| GET | `/todos` | List todos |
-| POST | `/todos` | Create a todo (`{"title": "...", "done": false}`) |
-| GET | `/todos/{id}` | Fetch one todo |
-| PATCH | `/todos/{id}` | Update title and/or done |
-| DELETE | `/todos/{id}` | Delete a todo |
-
-Storage is in-memory, so data resets when the process restarts.
-
-## CI
-
-GitHub Actions runs `ruff check`, `ruff format --check`, and `pytest` on every pull request.
+The playbook files are written in Devin's playbook format (Overview / What's Needed From User / Procedure / Specifications), so they can be pasted directly into Playbooks in Devin's settings.
