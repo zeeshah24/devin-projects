@@ -7,6 +7,7 @@ Documentation for improving how teams use Devin — specifically, closing the ga
 | Document | What it covers |
 | --- | --- |
 | [docs/devin-enablement-playbook.md](docs/devin-enablement-playbook.md) | The six failure modes behind low-effectiveness usage, how to detect each one, the org-level fixes, a 30/60/90 rollout, and the metrics to track |
+| [docs/user-metrics-and-diagnosis-plan.md](docs/user-metrics-and-diagnosis-plan.md) | How to collect per-user usage data, segment users by effectiveness, and map each lagging signal to a specific intervention |
 | [docs/playbooks/ticket_to_pr.md](docs/playbooks/ticket_to_pr.md) | Starter playbook: ticket to review-ready PR |
 | [docs/playbooks/fix_failing_ci.md](docs/playbooks/fix_failing_ci.md) | Starter playbook: diagnose and fix failing CI |
 | [docs/playbooks/session_postmortem.md](docs/playbooks/session_postmortem.md) | Starter playbook: session post-mortem and reusable-asset extraction |
