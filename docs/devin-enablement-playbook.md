@@ -30,7 +30,8 @@ Ordered by leverage per hour invested.
 3. **Ship 5–10 Playbooks for the org's actual recurring tasks.** Best candidates: fix failing CI, add unit tests to module X, dependency bumps, Sentry triage, ticket-to-PR for a specific service, migration slice. A playbook turns a weak prompt into a strong one automatically.
 4. **Turn on Devin Review with Auto-Fix.** It closes the loop without the user being competent at reviewing agent output — the biggest single differentiator between power and non-power users.
 5. **Connect the integrations that matter**: Slack/Teams (start sessions from the thread where the bug is discussed), Linear/Jira, and MCP servers for Sentry/Datadog/Figma/DBs. Each connected system removes a class of "Devin lacked context" failure.
-6. **Scheduled/automated sessions** for recurring chores so teams get value without anyone writing a prompt at all.
+6. **Generate DeepWiki for every active repo, and teach Ask Devin as the entry point.** DeepWiki auto-indexes a repo into a wiki with architecture diagrams, source links, and summaries, and Ask Devin uses it to answer grounded, cited questions about the code. This directly fixes the most common prompting failure: users who cannot name the right files or the pattern to imitate, because they do not know the codebase. Wikis are generated automatically when repos are connected — check that the repos your weak users work in actually have one.
+7. **Scheduled/automated sessions** for recurring chores so teams get value without anyone writing a prompt at all.
 
 ---
 
@@ -40,7 +41,7 @@ Generic "write better prompts" training does not stick. A one-page, team-specifi
 
 - **Green (just delegate):** unit tests, dependency bumps, lint/type-error cleanup, ticket-sized bugs with a repro, repetitive migration slices, docs, codebase Q&A, boilerplate integrations, internal tools/prototypes.
 - **Yellow (delegate with a spec/reference file):** new endpoints or components following an existing pattern, refactors with tests as a safety net, UI work with a Figma/design spec, cross-file feature work.
-- **Red (scope with a human first, or use Ask Devin to plan):** architecture choices, ambiguous product decisions, aesthetic-only work with no reference, anything with no way to verify success, sprawling multi-service changes.
+- **Red (scope with a human first, or use DeepWiki + Ask Devin to plan):** architecture choices, ambiguous product decisions, aesthetic-only work with no reference, anything with no way to verify success, sprawling multi-service changes.
 
 Have each team's power user fill this in for their own domain — it takes 30 minutes and is far more persuasive than corporate docs.
 
@@ -48,7 +49,7 @@ Have each team's power user fill this in for their own domain — it takes 30 mi
 
 ## 4. The habits that separate power users (teach exactly these five)
 
-1. **Scope in Ask Devin first**, then start the session from that conversation — the prompt is auto-generated with real codebase context.
+1. **Scope in Ask Devin first** (backed by the repo's DeepWiki), then start the session from that conversation — the prompt is auto-generated with real codebase context, so the user never has to know the file layout by heart.
 2. **Be opinionated.** State the file, the pattern to follow, the library, the approach. Make the judgment calls instead of leaving them to Devin.
 3. **State the finish line.** "Done = CI green + new tests for X + screenshot of the settings page."
 4. **Keep sessions XS/S/M.** Split large work into parallel sessions rather than one giant one.
@@ -107,7 +108,7 @@ Segment the bottom quartile by these and the intervention picks itself: high ACU
 ## 7. What I'd do first (highest value per hour)
 
 1. Blueprints for the top repos.
-2. Devin Review + Auto-Fix on.
+2. Devin Review + Auto-Fix on, and DeepWiki generated for every active repo.
 3. Three playbooks per team, written by that team's power user.
 4. The one-page task menu + prompt skeleton.
 5. Weekly "worst session review" ritual that feeds 1–4.
@@ -130,4 +131,5 @@ Segment the bottom quartile by these and the intervention picks itself: high ACU
 - https://docs.devin.ai/product-guides/knowledge
 - https://docs.devin.ai/work-with-devin/devin-review
 - https://docs.devin.ai/work-with-devin/ask-devin
+- https://docs.devin.ai/work-with-devin/deepwiki
 - https://docs.devin.ai/use-cases/best-practices

@@ -24,6 +24,7 @@ Companion to [devin-enablement-playbook.md](devin-enablement-playbook.md), which
 | Session insights (single) | The AI analysis: `analysis.issues[]`, `analysis.action_items[].type` (`machine_setup`, `repo_config`, `knowledge`, `prompt_improvement`, `external`, `other`), `analysis.suggested_prompt`, `analysis.note_usage.{good,bad}_usages`, `analysis.timeline` | `GET /v3/organizations/{org_id}/sessions/{devin_id}/insights` — analysis is generated on demand, so trigger it for the sessions you sample |
 | Org analytics dashboards | Active users, engagement trends, consumption | Settings → Analytics |
 | Git provider | Merge rate, review turnaround, revert rate, lines changed per PR | GitHub/GitLab API on the PR URLs returned above |
+| DeepWiki coverage | Which active repos have a generated wiki backing Ask Devin's answers | Wiki section of the app; treat a missing wiki on a frequently-used repo as a defect |
 | Knowledge & playbook inventory | Which assets exist, which are actually used (`playbook_id` on sessions, `note_usage` in analysis) | Playbooks and Knowledge settings + the fields above |
 
 `analysis.action_items[].type` is the most valuable field in the whole dataset: it is Devin's own classification of what went wrong, and it maps almost one-to-one onto the interventions in §6.
@@ -103,6 +104,7 @@ Also roll up **per repo** — `machine_setup` and `repo_config` action items con
 | Repeated `knowledge`-type action items across users | Tribal conventions not written down | Create/repair knowledge notes; pin repo-specific ones | Champion |
 | PRs opened but low merge rate | Wrong tasks delegated, or no verification loop | Task menu (green/yellow/red); enable Devin Review + Auto-Fix; require explicit done-criteria | Team lead |
 | Low asset leverage | Playbooks/notes exist but aren't discoverable | Promote macros (`!ticket_to_pr`), demo them live, wire them into ticket templates | Enablement |
+| Weak prompts naming no files, on repos with no wiki | User does not know the codebase well enough to give context | Generate DeepWiki for the repo; teach Ask-Devin-first scoping | Enablement |
 | Sessions only from the webapp | Not embedded in workflow | Connect Slack/Teams and the tracker; teach tagging Devin in-thread | Enablement |
 | Dormant despite onboarding | No trusted first use case | 1:1 pairing on one real ticket from their own backlog | Champion |
 | Bad `note_usage` entries | A knowledge note is misleading Devin | Rewrite or delete that note | Note owner |
