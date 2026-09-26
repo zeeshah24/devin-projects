@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "intel-agent"
+version = "0.1.0"
+description = "AI Research, Innovation & Market Intelligence Agent served over FastAPI"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "defusedxml==0.7.1",
+    "fastapi==0.141.1",
+    "httpx==0.28.1",
+    "pydantic==2.13.5",
+    "uvicorn==0.53.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.1.1",
+    "ruff==0.16.8",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+intel_agent = ["static/*.html"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]

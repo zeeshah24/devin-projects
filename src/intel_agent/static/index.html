@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Research &amp; Market Intelligence Agent</title>
+<style>
+  :root { font-family: system-ui, sans-serif; color: #1c2430; background: #f5f7fa; }
+  body { max-width: 960px; margin: 0 auto; padding: 24px; }
+  h1 { font-size: 1.4rem; margin-bottom: 4px; }
+  p.sub { margin-top: 0; color: #5b6675; }
+  form { display: grid; gap: 12px; background: #fff; padding: 16px; border-radius: 8px;
+         box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  textarea { width: 100%; min-height: 72px; font: inherit; padding: 8px; box-sizing: border-box; }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .row label { display: flex; flex-direction: column; font-size: .85rem; gap: 4px; }
+  select, input { font: inherit; padding: 6px; }
+  button { font: inherit; padding: 8px 16px; background: #2455d6; color: #fff; border: 0;
+           border-radius: 6px; cursor: pointer; justify-self: start; }
+  button:disabled { opacity: .6; cursor: wait; }
+  .examples button { background: #e7ecf5; color: #1c2430; font-size: .8rem; padding: 4px 8px; }
+  .examples { display: flex; flex-wrap: wrap; gap: 6px; }
+  section { background: #fff; margin-top: 16px; padding: 16px; border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  #answer { white-space: pre-wrap; font-family: ui-monospace, monospace; font-size: .85rem; }
+  .meta { font-size: .8rem; color: #5b6675; }
+  .warn { color: #9a5b00; font-size: .85rem; }
+  ol li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<h1>AI Research, Innovation &amp; Market Intelligence Agent</h1>
+<p class="sub">Answers grounded in arXiv, Hugging Face Papers, AI labs, tech press, the Federal Reserve, BEA, FRED and the World Bank.</p>
+<form id="ask">
+  <textarea id="question" placeholder="e.g. What were the biggest AI innovations this week?" required></textarea>
+  <div class="examples" id="examples"></div>
+  <div class="row">
+    <label>Country (fills {{country}})<input id="country" placeholder="optional"></label>
+    <label>Audience
+      <select id="audience">
+        <option value="">Auto-detect</option>
+        <option value="researcher">Researcher</option>
+        <option value="entrepreneur">Entrepreneur</option>
+        <option value="technology_professional">Technology professional</option>
+        <option value="student">Student</option>
+        <option value="business_leader">Business leader</option>
+        <option value="investor">Investor</option>
+        <option value="general">General</option>
+      </select>
+    </label>
+    <label>Depth
+      <select id="mode">
+        <option value="">Auto-detect</option>
+        <option value="brief">Brief answer</option>
+        <option value="report">Deep-research report</option>
+      </select>
+    </label>
+  </div>
+  <button id="submit" type="submit">Ask</button>
+</form>
+<section id="result" hidden>
+  <div class="meta" id="plan"></div>
+  <div class="warn" id="warnings"></div>
+  <div id="answer"></div>
+  <h3>Sources</h3>
+  <ol id="sources"></ol>
+</section>
+<script>
+const examples = [
+  "What were the biggest AI innovations this week?",
+  "What are the most important new AI research papers this week on agents and RAG?",
+  "What is the market gap and potential AI opportunities in {{country}}?",
+  "Give me a report on AI opportunities in Malaysia compared to the US",
+  "What are the AI job opportunities in Singapore?",
+  "How are interest rates affecting AI startups this month?",
+];
+const ex = document.getElementById("examples");
+for (const q of examples) {
+  const b = document.createElement("button");
+  b.type = "button"; b.textContent = q;
+  b.onclick = () => { document.getElementById("question").value = q; };
+  ex.appendChild(b);
+}
+document.getElementById("ask").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById("submit");
+  btn.disabled = true; btn.textContent = "Researching…";
+  const body = { question: document.getElementById("question").value };
+  for (const k of ["country", "audience", "mode"]) {
+    const v = document.getElementById(k).value.trim();
+    if (v) body[k] = v;
+  }
+  try {
+    const res = await fetch("/ask", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(JSON.stringify(data.detail ?? data));
+    const p = data.plan;
+    document.getElementById("plan").textContent =
+      `Intent: ${p.intent} · Mode: ${p.mode} · Audience: ${p.audience} · Period: ${p.period.label}` +
+      (p.country ? ` · Country: ${p.country.name}` : "") +
+      (p.compare_country ? ` vs ${p.compare_country.name}` : "") +
+      ` · LLM synthesis: ${data.llm_used ? "yes" : "no"}`;
+    document.getElementById("warnings").textContent = data.warnings.join(" ");
+    document.getElementById("answer").textContent = data.answer;
+    const ol = document.getElementById("sources");
+    ol.replaceChildren();
+    for (const s of data.sources) {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = s.url; a.target = "_blank"; a.rel = "noopener"; a.textContent = s.title;
+      li.append(a, ` — ${s.source}${s.published ? ", " + s.published.slice(0, 10) : ""}`);
+      ol.appendChild(li);
+    }
+    document.getElementById("result").hidden = false;
+  } catch (err) {
+    document.getElementById("result").hidden = false;
+    document.getElementById("answer").textContent = "Error: " + err.message;
+  } finally {
+    btn.disabled = false; btn.textContent = "Ask";
+  }
+});
+</script>
+</body>
+</html>
