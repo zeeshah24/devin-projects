@@ -77,7 +77,9 @@
                         background: var(--brand); color: #fff; cursor: pointer; }
   details.warn summary { cursor: pointer; }
   details.warn ul { margin: 8px 0 0; padding-left: 18px; }
-  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--line);
+          margin-bottom: 14px; }
+  .tablewrap { overflow-x: auto; max-width: 100%; }
   .tabs button { font: inherit; font-size: .9rem; border: 0; background: none; padding: 10px 14px;
                  cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; }
   .tabs button[aria-selected="true"] { color: var(--brand); border-bottom-color: var(--brand);
@@ -86,7 +88,7 @@
                  margin-left: 4px; }
   .tabs .spacer { flex: 1; }
   .tabs .tool { font-size: .8rem; color: var(--brand); }
-  .md { line-height: 1.6; font-size: .95rem; }
+  .md { line-height: 1.6; font-size: .95rem; overflow-wrap: anywhere; }
   .md h3, .md h4 { margin: 18px 0 6px; }
   .md p { margin: 8px 0; }
   .md ol, .md ul { padding-left: 22px; }
@@ -239,9 +241,9 @@ function renderMarkdown(src) {
       i += 2;
       const body = [];
       while (i < lines.length && /^\s*\|/.test(lines[i])) body.push(cells(lines[i++]));
-      out.push("<table><thead><tr>" + head.map((c) => `<th>${inline(c)}</th>`).join("") +
+      out.push("<div class=\"tablewrap\"><table><thead><tr>" + head.map((c) => `<th>${inline(c)}</th>`).join("") +
         "</tr></thead><tbody>" + body.map((r) => "<tr>" + r.map((c) => `<td>${inline(c)}</td>`)
-        .join("") + "</tr>").join("") + "</tbody></table>");
+        .join("") + "</tr>").join("") + "</tbody></table></div>");
       continue;
     }
     const list = line.match(/^\s*(\d+\.|[-*])\s+/);
@@ -419,7 +421,7 @@ function renderResult(data) {
         ? el("td", {}, el("a", { href: vals[c].url, target: "_blank", rel: "noopener noreferrer" }, fmtValue(vals[c].value)),
             el("div", { class: "hint" }, `${vals[c].period} · ${vals[c].source}`))
         : el("td", { class: "hint" }, "n/a"))));
-    panes.data = el("div", {}, el("table", {}, el("thead", {}, el("tr", {}, el("th", {}, "Indicator"),
+    panes.data = el("div", { class: "tablewrap" }, el("table", {}, el("thead", {}, el("tr", {}, el("th", {}, "Indicator"),
       ...countries.map((c) => el("th", {}, c)))), el("tbody", {}, ...rows)));
   }
 
