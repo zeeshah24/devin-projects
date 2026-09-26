@@ -114,6 +114,9 @@ document.getElementById("ask").addEventListener("submit", async (e) => {
     document.getElementById("result").hidden = false;
   } catch (err) {
     document.getElementById("result").hidden = false;
+    document.getElementById("plan").textContent = "";
+    document.getElementById("warnings").textContent = "";
+    document.getElementById("sources").replaceChildren();
     document.getElementById("answer").textContent = "Error: " + err.message;
   } finally {
     btn.disabled = false; btn.textContent = "Ask";
