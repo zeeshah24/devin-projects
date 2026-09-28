@@ -6,6 +6,7 @@ from importlib.resources import files
 from typing import Annotated
 
 import httpx
+from dotenv import find_dotenv, load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.responses import HTMLResponse
 
@@ -22,6 +23,7 @@ NEWS_GROUPS = sorted({spec.group for spec in FEEDS})
 
 @lru_cache
 def get_settings() -> Settings:
+    load_dotenv(find_dotenv(usecwd=True))
     return Settings.from_env()
 
 

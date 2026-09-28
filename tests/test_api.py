@@ -1,6 +1,10 @@
+import os
 from dataclasses import replace
+from pathlib import Path
+from unittest.mock import patch
 
 import httpx
+import pytest
 from fastapi.testclient import TestClient
 
 from intel_agent.config import Settings
@@ -158,3 +162,20 @@ def test_sources_are_interleaved_across_feeds(client: TestClient) -> None:
     data = ask(client, "What were the biggest AI innovations this week?")
     sources = {s["source"] for s in data["sources"]}
     assert {"OpenAI News", "TechCrunch", "Hugging Face Papers"} <= sources
+
+
+def test_settings_read_dotenv_and_shell_overrides(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    (tmp_path / ".env").write_text("LLM_API_KEY=from-dotenv\nLLM_MODEL=from-dotenv\n")
+    monkeypatch.chdir(tmp_path)
+    get_settings.cache_clear()
+    with patch.dict(os.environ, {"LLM_MODEL": "from-shell"}):
+        os.environ.pop("LLM_API_KEY", None)
+        os.environ.pop("OPENAI_API_KEY", None)
+        try:
+            settings = get_settings()
+        finally:
+            get_settings.cache_clear()
+    assert settings.llm_api_key == "from-dotenv"
+    assert settings.llm_model == "from-shell"

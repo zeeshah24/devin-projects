@@ -82,9 +82,11 @@ Anthropic, Reuters, BLS and IMF have no feed or API this service can reach relia
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
-export LLM_API_KEY=...            # optional; without it you get an evidence digest
+cp .env.example .env             # optional: put your keys here; without an LLM key you get an evidence digest
 uvicorn intel_agent.main:app --reload
 ```
+
+Settings come from environment variables or a `.env` file in the directory you start the server from (`.env` is git-ignored). A variable exported in the shell overrides the same one in `.env`. Restart the server after changing either.
 
 Open `http://localhost:8000/` for the web UI or `http://localhost:8000/docs` for the API docs.
 
