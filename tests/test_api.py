@@ -129,6 +129,27 @@ def test_llm_failure_falls_back_to_digest(
     assert any("HTTP 500" in w for w in data["warnings"])
 
 
+def test_llm_error_reason_is_shown_without_the_key(
+    client: TestClient, recorder: Recorder, settings: Settings
+) -> None:
+    llm_settings = replace(
+        settings, llm_api_key="secret-key", llm_base_url="https://api.openai.test/v1"
+    )
+    app.dependency_overrides[get_settings] = lambda: llm_settings
+
+    def gemini_style_error(request: httpx.Request) -> httpx.Response:
+        if request.url.host == "api.openai.test":
+            body = [{"error": {"code": 400, "message": "API key not valid: secret-key."}}]
+            return httpx.Response(400, json=body)
+        return default_handler(request)
+
+    recorder.handler = gemini_style_error
+    data = ask(client, "What were the biggest AI innovations this week?")
+    warning = next(w for w in data["warnings"] if "HTTP 400" in w)
+    assert "API key not valid: [redacted]." in warning
+    assert "secret-key" not in warning
+
+
 def test_news_search_opt_in(client: TestClient, recorder: Recorder, settings: Settings) -> None:
     app.dependency_overrides[get_settings] = lambda: replace(settings, enable_news_search=True)
     data = ask(client, "What are the AI job opportunities in Malaysia?")
