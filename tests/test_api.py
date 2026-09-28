@@ -1,3 +1,4 @@
+import json
 import os
 from dataclasses import replace
 from pathlib import Path
@@ -94,6 +95,36 @@ def test_llm_synthesis_receives_evidence_and_structure(
     assert "Malaysia" in user["content"] and "[1]" in user["content"]
     auth = [r for r in recorder.requests if r.url.host == "api.openai.test"][0]
     assert auth.headers["Authorization"] == "Bearer test-key"
+
+
+def test_gemini_base_url_uses_native_api_with_key_header(
+    client: TestClient, recorder: Recorder, settings: Settings
+) -> None:
+    llm_settings = replace(
+        settings,
+        llm_api_key="AQ.test-key",
+        llm_base_url="https://generativelanguage.googleapis.com/v1beta/openai",
+        llm_model="gemini-2.5-flash",
+    )
+    app.dependency_overrides[get_settings] = lambda: llm_settings
+
+    def gemini(request: httpx.Request) -> httpx.Response:
+        if request.url.host == "generativelanguage.googleapis.com":
+            parts = [{"text": "**Answer:** "}, {"text": "from Gemini [1]"}]
+            return httpx.Response(200, json={"candidates": [{"content": {"parts": parts}}]})
+        return default_handler(request)
+
+    recorder.handler = gemini
+    data = ask(client, "What were the biggest AI innovations this week?")
+    assert data["llm_used"] is True
+    assert data["answer"] == "**Answer:** from Gemini [1]"
+    [request] = [r for r in recorder.requests if r.url.host == "generativelanguage.googleapis.com"]
+    assert request.url.path == "/v1beta/models/gemini-2.5-flash:generateContent"
+    assert request.headers["x-goog-api-key"] == "AQ.test-key"
+    assert "authorization" not in request.headers
+    payload = json.loads(request.content)
+    assert "Never invent statistics" in payload["systemInstruction"]["parts"][0]["text"]
+    assert payload["contents"][0]["role"] == "user"
 
 
 def test_source_failures_become_warnings(client: TestClient, recorder: Recorder) -> None:

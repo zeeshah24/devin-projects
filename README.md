@@ -93,7 +93,7 @@ Open `http://localhost:8000/` for the web UI or `http://localhost:8000/docs` for
 | Env var | Default | Purpose |
 | --- | --- | --- |
 | `LLM_API_KEY` / `OPENAI_API_KEY` | unset | Turns on LLM synthesis |
-| `LLM_BASE_URL` | `https://api.openai.com/v1` | Any OpenAI-compatible endpoint |
+| `LLM_BASE_URL` | `https://api.openai.com/v1` | Any OpenAI-compatible endpoint. A `generativelanguage.googleapis.com` URL (e.g. `https://generativelanguage.googleapis.com/v1beta`) calls Google's native Gemini API with an `x-goog-api-key` header instead |
 | `LLM_MODEL` | `gpt-4o-mini` | Chat model name |
 | `FRED_API_KEY` | unset | Adds the latest U.S. fed funds rate, unemployment, CPI and real GDP growth |
 | `ENABLE_NEWS_SEARCH` | off | Adds Google News RSS keyword search for country questions (the feed's terms limit it to personal, non-commercial use) |
