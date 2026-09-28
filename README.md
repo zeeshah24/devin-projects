@@ -37,6 +37,27 @@ Storage is in-memory, so data resets when the process restarts.
 
 A FastAPI service (`src/intel_agent`) that answers questions about AI research, AI industry news, country AI opportunities, AI jobs and the economy. It grounds its answers in live data it fetches from trusted sources, then uses an LLM to write the answer.
 
+```mermaid
+flowchart LR
+    UI["Web UI (/)"] --> API
+    Client["API clients (/ask, /plan, /papers, /news, /indicators)"] --> API
+    API["FastAPI app<br/>main.py"] --> Agent["IntelligenceAgent<br/>agent.py"]
+    Agent --> Planner["Planner<br/>intent, depth, audience,<br/>country, time window"]
+    Planner -- "country missing" --> Clarify["Ask which country"]
+    Planner --> Gather["Concurrent gather<br/>(failures become warnings)"]
+    Gather --> Papers["arXiv, Hugging Face Papers"]
+    Gather --> Feeds["Lab and news RSS/Atom feeds"]
+    Gather --> Econ["World Bank WDI, FRED*,<br/>Fed and BEA feeds"]
+    Gather --> News["Google News search*"]
+    Papers & Feeds & Econ & News --> Merge["Round-robin merge<br/>numbered evidence"]
+    Merge --> Synth{"LLM key set?"}
+    Synth -- yes --> LLM["OpenAI-compatible LLM<br/>brief answer or report"]
+    Synth -- "no / LLM error" --> Digest["Evidence digest<br/>(citations only)"]
+    LLM & Digest --> Resp["AskResponse<br/>answer, plan, sources,<br/>indicators, warnings"]
+```
+
+\* optional: FRED needs `FRED_API_KEY`; news search needs `ENABLE_NEWS_SEARCH=1`.
+
 How it works:
 
 1. **Plan**: rule-based classification of the question: intent (innovations, research papers, country opportunities, country vs. U.S., jobs, economy, general), depth (brief answer or deep-research report, e.g. "give me a report", "deep dive"), audience (researcher, entrepreneur, student, ...), country (fills a `{{country}}` placeholder) and time window ("today", "this week", "last 3 days", ...). If a question needs a country and none is given, the agent asks which country instead of guessing.
